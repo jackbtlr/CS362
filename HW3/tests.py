@@ -6,15 +6,51 @@ class TestCase(unittest.TestCase):
     pass
 
 def generate_testcases(tests_to_generate=1000):
-    pre = ['random.randint(4000,4999)', 'random.randint(5100,5599)', 'random.randint(2221,2720)', 'random.randint(3400,3799)', 'random.randint(0000,9999)']
-    lengths = [14,15,16,17]
+    card_types = ['visa', 'mc', 'amex', 'random']
+    hashmap  = {
+        'visa': {
+            'prefix': ['random.randint(4000,4999)'],
+            'length': {
+                'valid': [16],
+                'invalid': [15, 17]
+            }
+        },
+        'mc': {
+            'prefix': ['random.randint(5100,5599)', 'random.randint(2221,2720)'],
+            'length': {
+                'valid': [16],
+                'invalid': [15, 17]
+            }
+        },
+        'amex': {
+            'prefix': ['random.randint(3400,3499)', 'random.randint(3700,3799)'],
+            'length': {
+                'valid': [15],
+                'invalid': [14, 16]
+            }
+        },
+        'random': {
+            'prefix': ['5099', '5600', '2220', '2721', '3399', '3500', '3699', '3800'],
+            'length': {
+                'valid': [14,15,16,17],
+                'invalid': [14,15,16,17]
+            }
+        }
+        
+    }
+
     for i in range(tests_to_generate):
         num = ''
-        pre_index = random.randint(0,4)
-        prefix = str(eval(pre[pre_index]))
+        card = random.choice(card_types)
+        prefix = str(eval(random.choice(hashmap[card]['prefix'])))
         num += prefix
         
-        length = lengths[random.randint(0,3)]
+        # 80% chance length is correct
+        if random.random() > 0.2:
+            length = random.choice(hashmap[card]['length']['valid'])
+        else:
+            length = random.choice(hashmap[card]['length']['invalid'])
+        
         while len(num) < length - 1:
             digit = random.randint(0,9)
             num += str(digit)
@@ -25,9 +61,6 @@ def generate_testcases(tests_to_generate=1000):
             num += str(check_sum)
         else:
             num += str((check_sum + 1) % 10)
-
-        if random.random() > 0.95:
-            num = ''
 
         new_test = build_test_func(num, credit_card_validator)
         setattr(TestCase, 'test_{}'.format(num), new_test)

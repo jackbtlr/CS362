@@ -46,7 +46,7 @@ if __name__ == '__main__':
             else:
                 bugs[current].append(t)
     cases = classify_bugs(bugs)
-    #print(json.dumps(cases, indent = 4, sort_keys=True))
+    # print(json.dumps(cases, indent = 4, sort_keys=True))
     bug7_list = []
     for set in cases['Bug 7:']:
         bug7_list += cases['Bug 7:'][set]
@@ -55,14 +55,8 @@ if __name__ == '__main__':
         exam[num] = {}
         for c in num:
             exam[num][c] = exam[num].get(c, 0) + 1
-    for i in range(10):
-        c = str(i)
-        match = True
-        count = exam['2116622138520802'].get(c, 0)
-        for num in exam:
-            if exam[num].get(c, 0) != count:
-                match = False
-        if match:
-            print(f'Count of {i}: {count}')
+    
     print(json.dumps(exam, indent = 4, sort_keys=True))
+    for num in exam:
+        print(max(list(exam[num].values())))
         

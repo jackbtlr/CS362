@@ -2,12 +2,14 @@ from credit_card_validator import credit_card_validator
 import unittest
 import random
 
+
 class TestCase(unittest.TestCase):
     pass
 
-def generate_testcases(tests_to_generate=1000):
+
+def generate_testcases(tests_to_generate=10000):
     card_types = ['visa', 'mc', 'amex', 'random']
-    hashmap  = {
+    hashmap = {
         'visa': {
             'prefix': ['random.randint(4000,4999)'],
             'length': {
@@ -16,27 +18,29 @@ def generate_testcases(tests_to_generate=1000):
             }
         },
         'mc': {
-            'prefix': ['random.randint(5100,5599)', 'random.randint(2221,2720)'],
+            'prefix': ['random.randint(5100,5599)',
+                       'random.randint(2221,2720)'],
             'length': {
                 'valid': [16],
                 'invalid': [15, 17]
             }
         },
         'amex': {
-            'prefix': ['random.randint(3400,3499)', 'random.randint(3700,3799)'],
+            'prefix': ['random.randint(3400,3499)',
+                       'random.randint(3700,3799)'],
             'length': {
                 'valid': [15],
                 'invalid': [14, 16]
             }
         },
         'random': {
-            'prefix': ['5099', '5600', '2220', '2721', '3399', '3500', '3699', '3800'],
+            'prefix': ['5099', '5600', '2220', '2721',
+                       '3399', '3500', '3699', '3800'],
             'length': {
-                'valid': [14,15,16,17],
-                'invalid': [14,15,16,17]
+                'valid': [14, 15, 16, 17],
+                'invalid': [14, 15, 16, 17]
             }
         }
-        
     }
 
     for i in range(tests_to_generate):
@@ -44,17 +48,17 @@ def generate_testcases(tests_to_generate=1000):
         card = random.choice(card_types)
         prefix = str(eval(random.choice(hashmap[card]['prefix'])))
         num += prefix
-        
+
         # 80% chance length is correct
         if random.random() > 0.2:
             length = random.choice(hashmap[card]['length']['valid'])
         else:
             length = random.choice(hashmap[card]['length']['invalid'])
-        
+
         while len(num) < length - 1:
-            digit = random.randint(0,9)
+            digit = random.randint(0, 9)
             num += str(digit)
-        
+
         check_sum = check_digit(num)
         # Add valid check digit 75% of the time, else invalid
         if random.random() > 0.25:
@@ -65,11 +69,12 @@ def generate_testcases(tests_to_generate=1000):
         new_test = build_test_func(num, credit_card_validator)
         setattr(TestCase, 'test_{}'.format(num), new_test)
 
+
 def build_test_func(test_case, func_under_test):
     def test(self):
         func_under_test(test_case)
     return test
-        
+
 
 def check_digit(num):
     sum = 0
@@ -88,7 +93,7 @@ def check_digit(num):
         double = not double
         i -= 1
     check_digit = (10 - (sum % 10)) % 10
-    return check_digit    
+    return check_digit
 
 
 if __name__ == '__main__':

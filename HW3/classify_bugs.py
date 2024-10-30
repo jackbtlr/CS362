@@ -4,11 +4,13 @@ from tests import check_digit
 def classify_bugs(bugs):
     cases = {}
     for k, v in bugs.items():
-        cases[k] = []
+        cases[k] = {}
         for num in v:
             case = analyze_bug(num)
             if case not in cases[k]:
-                cases[k].append(case)
+                cases[k][case] = [num]
+            else:
+                cases[k][case].append(num)
     return cases
 
 def analyze_bug(num):
@@ -20,7 +22,7 @@ def analyze_bug(num):
     elif 51 <= int(num[0:2]) <= 55 or 2221 <= int(num[0:4]) <= 2720:
         res += 'mastercard,'
     else:
-        res += num[0:4] + ','
+        res += 'random,'
 
     res += f'length={len(num)},'
 
